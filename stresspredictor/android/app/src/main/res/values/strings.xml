@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="health_permissions_rationale">This app requires health data (like heart rate, sleep, body temperature) to accurately predict your stress levels using our AI model.</string>
+</resources>

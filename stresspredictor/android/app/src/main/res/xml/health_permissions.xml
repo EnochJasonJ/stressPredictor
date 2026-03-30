@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<health-permissions xmlns:android="http://schemas.android.com/apk/res/android">
+    <permission android:name="android.permission.health.READ_STEPS"/>
+    <permission android:name="android.permission.health.READ_HEART_RATE"/>
+    <permission android:name="android.permission.health.READ_SLEEP"/>
+    <permission android:name="android.permission.health.READ_RESPIRATORY_RATE"/>
+    <permission android:name="android.permission.health.READ_BODY_TEMPERATURE"/>
+    <permission android:name="android.permission.health.READ_OXYGEN_SATURATION"/>
+    <permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
+    <permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
+    <permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY"/>
+    <permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND"/>
+</health-permissions>
