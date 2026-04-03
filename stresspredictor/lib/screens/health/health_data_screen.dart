@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stresspredictor/core/theme/app_colors.dart';
 import 'package:stresspredictor/models/health_data.dart';
+import 'package:stresspredictor/widgets/weekly_steps_chart.dart';
 
 /// Screen that shows a detailed breakdown of all data imported from Google Fit / Health Connect.
 class HealthDataScreen extends StatelessWidget {
@@ -64,6 +65,11 @@ class HealthDataScreen extends StatelessWidget {
                 ),
               ],
             ),
+
+            const SizedBox(height: 24),
+
+            // --- 7-Day Chart Integration ---
+            const WeeklyStepsChart(),
 
             const SizedBox(height: 24),
 

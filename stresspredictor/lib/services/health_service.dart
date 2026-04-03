@@ -151,4 +151,36 @@ class HealthService {
       return defaults;
     }
   }
+
+  /// Fetches an array of total steps taken over the last [days] days.
+  /// Used primarily for charting health trends.
+  Future<List<int>> fetchWeeklySteps({int days = 7}) async {
+    if (!_isAuthorized) {
+      final authSuccess = await initialize();
+      if (!authSuccess) {
+        return List.generate(days, (_) => 0);
+      }
+    }
+
+    try {
+      final now = DateTime.now();
+      final List<int> dailySteps = [];
+
+      for (int i = days - 1; i >= 0; i--) {
+        final date = now.subtract(Duration(days: i));
+        final midnight = DateTime(date.year, date.month, date.day);
+        final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+        // Fetch aggregated steps using interval
+        int? steps = await _health.getTotalStepsInInterval(
+            midnight, i == 0 ? now : endOfDay);
+        dailySteps.add(steps ?? 0);
+      }
+
+      return dailySteps;
+    } catch (e) {
+      debugPrint("[HealthService] Error fetching weekly steps: $e");
+      return List.generate(days, (_) => 0);
+    }
+  }
 }

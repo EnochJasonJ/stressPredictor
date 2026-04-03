@@ -59,11 +59,15 @@ class StressHistoryChart extends StatelessWidget {
                                 if (idx < 0 || idx >= data.length) {
                                   return const Text('');
                                 }
-                                return Text(
-                                  data[idx].label,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    data[idx].label,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textSecondary,
+                                    ),
                                   ),
                                 );
                               },
@@ -78,8 +82,8 @@ class StressHistoryChart extends StatelessWidget {
                                 return Text(
                                   value.toInt().toString(),
                                   style: const TextStyle(
-                                    fontSize: 11,
-                                    
+                                    fontSize: 10,
+                                    color: AppColors.textSecondary,
                                   ),
                                 );
                               },
@@ -89,19 +93,42 @@ class StressHistoryChart extends StatelessWidget {
                         barGroups: data.asMap().entries.map((e) {
                           final color = e.value.avgLevel != null
                               ? stressLevelColor(context, e.value.avgLevel!)
-                              : AppColors.divider;
+                              : AppColors.surfaceVariant;
                           return BarChartGroupData(
                             x: e.key,
                             barRods: [
                               BarChartRodData(
                                 toY: e.value.avgLevel?.toDouble() ?? 0,
                                 color: color,
-                                width: 22,
+                                width: 14,
                                 borderRadius: BorderRadius.circular(4),
+                                backDrawRodData: BackgroundBarChartRodData(
+                                  show: true,
+                                  toY: 4,
+                                  color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
+                                ),
                               ),
                             ],
+                            showingTooltipIndicators: e.value.avgLevel != null ? [0] : [],
                           );
                         }).toList(),
+                        barTouchData: BarTouchData(
+                          enabled: true,
+                          touchTooltipData: BarTouchTooltipData(
+                            getTooltipColor: (group) => AppColors.surfaceVariant,
+                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                              if (rod.toY == 0) return null;
+                              return BarTooltipItem(
+                                '${rod.toY.toInt()}',
+                                const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 10,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                       duration: const Duration(milliseconds: 600),
                       curve: Curves.easeOutBack,
