@@ -10,7 +10,7 @@ class ApiService {
 
   // Use 10.0.2.2 for Android emulator → host machine localhost.
   // For a physical device on WiFi, use your machine's actual local IP.
-  static const String _baseUrl = 'http://192.168.0.103:8000';
+  static const String _baseUrl = 'http://10.40.254.132:8000';
 
   final _client = http.Client();
 
