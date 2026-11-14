@@ -138,6 +138,54 @@ class _AmbientPainter extends CustomPainter {
       Paint()..color = accent.withValues(alpha: 0.14),
     );
 
+    // A second, slower satellite loop adds depth on the opposite side of the screen.
+    final satelliteCenter = Offset(size.width * 0.72, size.height * 0.72);
+    final satelliteOrbitPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..color = accent.withValues(alpha: 0.2);
+    canvas.save();
+    canvas.translate(satelliteCenter.dx, satelliteCenter.dy);
+    canvas.rotate(-phase * math.pi * 2 * 0.65);
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset.zero, width: 118, height: 44),
+      satelliteOrbitPaint,
+    );
+    canvas.restore();
+    final satelliteAngle = -phase * math.pi * 2 * 0.65;
+    canvas.drawCircle(
+      Offset(
+        satelliteCenter.dx + math.cos(satelliteAngle) * 59,
+        satelliteCenter.dy + math.sin(satelliteAngle) * 22,
+      ),
+      3.2,
+      Paint()..color = accent.withValues(alpha: 0.8),
+    );
+
+    // Two small twinkles breathe at different rates for a little extra life.
+    for (final sparkle in [
+      Offset(size.width * 0.16, size.height * 0.24),
+      Offset(size.width * 0.34, size.height * 0.67),
+    ]) {
+      final sparklePhase = phase * math.pi * 2 + sparkle.dx * 0.04;
+      final sparkleAlpha = 0.18 + (math.sin(sparklePhase) + 1) * 0.18;
+      final sparkleSize = 3 + (math.sin(sparklePhase) + 1) * 1.5;
+      final sparklePaint = Paint()
+        ..color = accent.withValues(alpha: sparkleAlpha)
+        ..strokeWidth = 1.3
+        ..strokeCap = StrokeCap.round;
+      canvas.drawLine(
+        Offset(sparkle.dx - sparkleSize, sparkle.dy),
+        Offset(sparkle.dx + sparkleSize, sparkle.dy),
+        sparklePaint,
+      );
+      canvas.drawLine(
+        Offset(sparkle.dx, sparkle.dy - sparkleSize),
+        Offset(sparkle.dx, sparkle.dy + sparkleSize),
+        sparklePaint,
+      );
+    }
+
     // Sparse halftone dots fade in and out very gently across the lower edge.
     final dotPaint = Paint();
     for (var row = 0; row < 7; row++) {

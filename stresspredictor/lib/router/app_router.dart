@@ -52,8 +52,9 @@ class AppRouter {
           return AppConstants.loginPath;
         }
 
-        // If user is logged in and on login/signup/intro, redirect to home.
-        if (isLoggedIn && (onAuthRoute || onIntro)) {
+        // Let every launch show the intro splash. It navigates to home when its
+        // animation completes; signed-in users should only skip auth screens.
+        if (isLoggedIn && onAuthRoute) {
           return AppConstants.homePath;
         }
 
