@@ -84,17 +84,17 @@ class _AmbientPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
     final drift = math.sin(phase * math.pi * 2);
-    final sunCenter = Offset(size.width * 0.91, size.height * 0.2 + drift * 11);
+    final sunCenter = Offset(size.width * 0.9, size.height * 0.21 + drift * 24);
 
     // A quiet sun disc with horizontal cut lines, like a vintage print.
-    final sunPaint = Paint()..color = accent.withValues(alpha: 0.055);
-    canvas.drawCircle(sunCenter, 47, sunPaint);
+    final sunPaint = Paint()..color = accent.withValues(alpha: 0.16);
+    canvas.drawCircle(sunCenter, 52, sunPaint);
     final stripePaint = Paint()
       ..color = background
       ..strokeWidth = 2;
     for (var i = -2; i <= 2; i++) {
-      final y = sunCenter.dy + i * 11;
-      final halfWidth = math.sqrt(math.max(0, 47 * 47 - (i * 11) * (i * 11)));
+      final y = sunCenter.dy + i * 12;
+      final halfWidth = math.sqrt(math.max(0, 52 * 52 - (i * 12) * (i * 12)));
       canvas.drawLine(
         Offset(sunCenter.dx - halfWidth, y),
         Offset(sunCenter.dx + halfWidth, y),
@@ -105,7 +105,11 @@ class _AmbientPainter extends CustomPainter {
     final orbitPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
-      ..color = ink.withValues(alpha: 0.055);
+      ..color = ink.withValues(alpha: 0.13);
+    canvas.save();
+    canvas.translate(sunCenter.dx, sunCenter.dy);
+    canvas.rotate(phase * math.pi * 2);
+    canvas.translate(-sunCenter.dx, -sunCenter.dy);
     for (var i = 0; i < 4; i++) {
       canvas.drawOval(
         Rect.fromCenter(
@@ -116,6 +120,23 @@ class _AmbientPainter extends CustomPainter {
         orbitPaint,
       );
     }
+    canvas.restore();
+
+    final orbitAngle = phase * math.pi * 2;
+    final orbitDot = Offset(
+      sunCenter.dx + math.cos(orbitAngle) * 94,
+      sunCenter.dy + math.sin(orbitAngle) * 54,
+    );
+    canvas.drawCircle(
+      orbitDot,
+      4,
+      Paint()..color = accent.withValues(alpha: 0.72),
+    );
+    canvas.drawCircle(
+      orbitDot,
+      9,
+      Paint()..color = accent.withValues(alpha: 0.14),
+    );
 
     // Sparse halftone dots fade in and out very gently across the lower edge.
     final dotPaint = Paint();
@@ -125,9 +146,9 @@ class _AmbientPainter extends CustomPainter {
         final y = size.height * 0.84 + row * 13.0;
         if (x > size.width * 0.45 || y > size.height) continue;
         final pulse =
-            0.035 +
+            0.08 +
             (math.sin(phase * math.pi * 2 + row * 0.5 + column * 0.35) + 1) *
-                0.012;
+                0.045;
         dotPaint.color = ink.withValues(alpha: pulse);
         canvas.drawCircle(Offset(x, y), 1.15, dotPaint);
       }
