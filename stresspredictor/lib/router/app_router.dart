@@ -35,7 +35,8 @@ class AppRouter {
         final isLoggedIn = authProvider.isLoggedIn;
         final location = state.uri.toString();
 
-        final onAuthRoute = location == AppConstants.loginPath ||
+        final onAuthRoute =
+            location == AppConstants.loginPath ||
             location == AppConstants.signupPath;
         final onIntro = location == AppConstants.introPath;
 
@@ -178,26 +179,34 @@ class _HomeShellState extends State<HomeShell> {
     final index = _calculateSelectedIndex(context);
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(
+            top: BorderSide(color: Theme.of(context).dividerColor),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center_outlined),
-            activeIcon: Icon(Icons.fitness_center),
-            label: 'Workout',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: index,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.grid_view_outlined),
+              activeIcon: Icon(Icons.grid_view_rounded),
+              label: 'Today',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.self_improvement_outlined),
+              activeIcon: Icon(Icons.self_improvement_rounded),
+              label: 'Reset',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person_rounded),
+              label: 'You',
+            ),
+          ],
+        ),
       ),
     );
   }

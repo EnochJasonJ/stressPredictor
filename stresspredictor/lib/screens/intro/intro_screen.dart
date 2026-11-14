@@ -67,7 +67,7 @@ class _IntroScreenState extends State<IntroScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Stack(
           children: [
@@ -88,11 +88,11 @@ class _IntroScreenState extends State<IntroScreen>
                             width: 120,
                             height: 120,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -101,7 +101,7 @@ class _IntroScreenState extends State<IntroScreen>
                             child: const Icon(
                               Icons.psychology_outlined,
                               size: 60,
-                              color: AppColors.primary,
+                              color: AppColors.textOnPrimary,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -111,8 +111,8 @@ class _IntroScreenState extends State<IntroScreen>
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 1.2,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.6,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -120,7 +120,7 @@ class _IntroScreenState extends State<IntroScreen>
                             'Your wellness companion',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.8),
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -143,7 +143,7 @@ class _IntroScreenState extends State<IntroScreen>
                     child: TextButton(
                       onPressed: _skipIntro,
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: const Text(
