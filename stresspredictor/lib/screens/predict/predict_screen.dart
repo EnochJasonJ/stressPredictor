@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,9 @@ import 'package:stresspredictor/core/theme/app_colors.dart';
 import 'package:stresspredictor/models/health_data.dart';
 import 'package:stresspredictor/providers/stress_provider.dart';
 import 'package:stresspredictor/services/health_service.dart';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 /// Manual input screen – lets users enter (or adjust) all 8 health features
 /// before running a stress prediction. Pre-populated from Health Connect
@@ -19,6 +24,8 @@ class PredictScreen extends StatefulWidget {
 class _PredictScreenState extends State<PredictScreen> {
   bool _isFetching = true;
   late HealthData _data;
+  File? _selectedImage;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -52,10 +59,65 @@ class _PredictScreenState extends State<PredictScreen> {
     });
   }
 
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (pickedFile == null) return;
+
+    try {
+      print('Original image: ${pickedFile.path}');
+
+      final tempDir = Directory.systemTemp;
+
+      final outputPath =
+          '${tempDir.path}/stress_face_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final compressedFile = await FlutterImageCompress.compressAndGetFile(
+        pickedFile.path,
+        outputPath,
+        format: CompressFormat.jpeg,
+        quality: 85,
+      );
+
+      if (compressedFile == null) {
+        throw Exception('Could not convert image to JPEG.');
+      }
+
+      print('Converted image: ${compressedFile.path}');
+      print('Converted size: ${await compressedFile.length()} bytes');
+
+      setState(() {
+        _selectedImage = File(compressedFile.path);
+      });
+    } catch (e) {
+      print('Image conversion failed: $e');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not process image: $e')));
+    }
+  }
+
   Future<void> _runPrediction() async {
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a face image first.')),
+      );
+      return;
+    }
+
     final provider = context.read<StressProvider>();
-    await provider.predictFromManualData(_data);
-    if (mounted) context.pop();
+
+    await provider.predictFromMultimodalData(_data, _selectedImage!);
+
+    if (mounted) {
+      context.pop();
+    }
   }
 
   @override
@@ -69,10 +131,7 @@ class _PredictScreenState extends State<PredictScreen> {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 12),
-                  Text(
-                    'Loading health data...',
-                    style: TextStyle(),
-                  ),
+                  Text('Loading health data...', style: TextStyle()),
                 ],
               ),
             )
@@ -89,16 +148,12 @@ class _PredictScreenState extends State<PredictScreen> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            
                           ),
                         ),
                         const SizedBox(height: 4),
                         const Text(
                           'Pre-filled from available sensors. Adjust any values manually.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            
-                          ),
+                          style: TextStyle(fontSize: 13),
                         ),
                         const SizedBox(height: 20),
                         _slider(
@@ -174,6 +229,42 @@ class _PredictScreenState extends State<PredictScreen> {
                           field: 'heart',
                         ),
                         const SizedBox(height: 24),
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            width: double.infinity,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            child: _selectedImage == null
+                                ? const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.add_a_photo, size: 48),
+                                      SizedBox(height: 12),
+                                      Text('Select face image'),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Choose a clear photo facing the camera',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.file(
+                                      _selectedImage!,
+                                      width: double.infinity,
+                                      height: 220,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -185,35 +276,35 @@ class _PredictScreenState extends State<PredictScreen> {
                     builder: (context, prov, _) => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: prov.isLoading ? null : _runPrediction,
-                        icon: prov.isLoading
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.analytics_outlined),
-                        label: Text(
-                          prov.isLoading
-                              ? 'Predicting...'
-                              : 'Predict Stress Level',
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: prov.isLoading ? null : _runPrediction,
+                          icon: prov.isLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.analytics_outlined),
+                          label: Text(
+                            prov.isLoading
+                                ? 'Predicting...'
+                                : 'Predict Stress Level',
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
                 ),
               ],
             ),
@@ -242,10 +333,7 @@ class _PredictScreenState extends State<PredictScreen> {
                 const SizedBox(width: 8),
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
                 Container(
@@ -279,20 +367,8 @@ class _PredictScreenState extends State<PredictScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '$min$unit',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    
-                  ),
-                ),
-                Text(
-                  '$max$unit',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    
-                  ),
-                ),
+                Text('$min$unit', style: const TextStyle(fontSize: 11)),
+                Text('$max$unit', style: const TextStyle(fontSize: 11)),
               ],
             ),
           ],

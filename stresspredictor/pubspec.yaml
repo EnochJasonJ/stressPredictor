@@ -43,6 +43,9 @@ dependencies:
   google_fonts: ^6.1.0
   health: ^13.3.1
   crypto: ^3.0.0
+  image_picker: ^1.2.2
+  image: ^4.5.4
+  flutter_image_compress: ^2.5.1
 
 dev_dependencies:
   flutter_test:
