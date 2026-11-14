@@ -45,12 +45,11 @@ class _StressGaugeState extends State<StressGauge>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1200),
     );
-    _animation = Tween<double>(
-      begin: 0,
-      end: widget.stressLevel / 4.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _animation = Tween<double>(begin: 0, end: widget.stressLevel / 4.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
     _controller.forward();
   }
 
@@ -60,10 +59,10 @@ class _StressGaugeState extends State<StressGauge>
     if (oldWidget.stressLevel != widget.stressLevel) {
       _animation =
           Tween<double>(
-            begin: oldWidget.stressLevel / 4.0,
+            begin: _animation.value,
             end: widget.stressLevel / 4.0,
           ).animate(
-            CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+            CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
           );
       _controller.forward(from: 0);
     }
@@ -77,10 +76,13 @@ class _StressGaugeState extends State<StressGauge>
 
   @override
   Widget build(BuildContext context) {
-    final color = stressLevelColor(context, widget.stressLevel);
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
+        final color = stressLevelColor(context, widget.stressLevel);
+        final progress = MediaQuery.disableAnimationsOf(context)
+            ? widget.stressLevel / 4.0
+            : _animation.value;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -89,7 +91,7 @@ class _StressGaugeState extends State<StressGauge>
               height: 160,
               child: CustomPaint(
                 painter: _GaugePainter(
-                  progress: _animation.value,
+                  progress: progress,
                   color: color,
                   trackColor: Theme.of(
                     context,
@@ -100,19 +102,24 @@ class _StressGaugeState extends State<StressGauge>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${(widget.stressLevel / 4 * 100).toInt()}%',
+                        '${(progress * 100).round()}%',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: color,
                         ),
                       ),
-                      Text(
-                        widget.stressLabel,
-                        style: const TextStyle(
-                          fontSize: 13,
-
-                          fontWeight: FontWeight.w500,
+                      AnimatedSwitcher(
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 220),
+                        child: Text(
+                          widget.stressLabel,
+                          key: ValueKey(widget.stressLabel),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],

@@ -16,13 +16,44 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _entranceController;
+
   @override
   void initState() {
     super.initState();
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 850),
+    )..forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<StressProvider>().loadHistory();
     });
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    super.dispose();
+  }
+
+  Widget _enter(Widget child, double start, double end) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    final animation = CurvedAnimation(
+      parent: _entranceController,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.045),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
+    );
   }
 
   @override
@@ -55,88 +86,107 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 18, 20, 32),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(11),
+                      _enter(
+                        Row(
+                          children: [
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(11),
+                              ),
+                              child: Icon(
+                                Icons.graphic_eq_rounded,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.graphic_eq_rounded,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: 11),
-                          Text(
-                            'FIELDNOTE',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  letterSpacing: 1.7,
-                                ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${months[now.month - 1]} ${now.day}',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                          const SizedBox(width: 8),
-                          _HeaderAction(
-                            icon: Icons.tune_rounded,
-                            tooltip: 'Manual prediction',
-                            onTap: () => context.push(AppConstants.predictPath),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 28),
-                      Text(
-                        'A moment for\nyourself.',
-                        style: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(fontSize: 34, height: 1.08),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Your wellbeing, in focus.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 22),
-                      _StressPanel(provider: provider),
-                      const SizedBox(height: 14),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: provider.isLoading
-                              ? null
-                              : provider.predictFromHealthData,
-                          icon: provider.isLoading
-                              ? SizedBox(
-                                  width: 17,
-                                  height: 17,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
+                            const SizedBox(width: 11),
+                            Text(
+                              'FIELDNOTE',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onPrimary,
+                                    ).colorScheme.primary,
+                                    letterSpacing: 1.7,
                                   ),
-                                )
-                              : const Icon(Icons.bolt_rounded, size: 19),
-                          label: Text(
-                            provider.isLoading
-                                ? 'READING YOUR SIGNALS…'
-                                : 'CHECK IN WITH MY BODY',
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(54),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '${months[now.month - 1]} ${now.day}',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                            const SizedBox(width: 8),
+                            _HeaderAction(
+                              icon: Icons.tune_rounded,
+                              tooltip: 'Manual prediction',
+                              onTap: () =>
+                                  context.push(AppConstants.predictPath),
+                            ),
+                          ],
+                        ),
+                        0,
+                        0.42,
+                      ),
+                      const SizedBox(height: 28),
+                      _enter(
+                        Text(
+                          'A moment for\nyourself.',
+                          style: Theme.of(context).textTheme.headlineLarge
+                              ?.copyWith(fontSize: 34, height: 1.08),
+                        ),
+                        0.08,
+                        0.5,
+                      ),
+                      const SizedBox(height: 8),
+                      _enter(
+                        Text(
+                          'Your wellbeing, in focus.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        0.14,
+                        0.56,
+                      ),
+                      const SizedBox(height: 22),
+                      _enter(_StressPanel(provider: provider), 0.2, 0.62),
+                      const SizedBox(height: 14),
+                      _enter(
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: provider.isLoading
+                                ? null
+                                : provider.predictFromHealthData,
+                            icon: provider.isLoading
+                                ? SizedBox(
+                                    width: 17,
+                                    height: 17,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary,
+                                    ),
+                                  )
+                                : const Icon(Icons.bolt_rounded, size: 19),
+                            label: Text(
+                              provider.isLoading
+                                  ? 'READING YOUR SIGNALS…'
+                                  : 'CHECK IN WITH MY BODY',
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(54),
+                            ),
                           ),
                         ),
+                        0.28,
+                        0.7,
                       ),
                       if (provider.error != null) ...[
                         const SizedBox(height: 12),
@@ -161,7 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                       ),
                       const SizedBox(height: 8),
-                      ActivityCard(healthData: provider.currentHealthData),
+                      _enter(
+                        ActivityCard(healthData: provider.currentHealthData),
+                        0.4,
+                        0.82,
+                      ),
                       if (provider.currentPrediction != null) ...[
                         const SizedBox(height: 26),
                         const _SectionHeading(
@@ -169,8 +223,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Try this next',
                         ),
                         const SizedBox(height: 8),
-                        AdviceCard(
-                          stressLevel: provider.currentPrediction!.stressLevel,
+                        _enter(
+                          AdviceCard(
+                            stressLevel:
+                                provider.currentPrediction!.stressLevel,
+                          ),
+                          0.5,
+                          0.92,
                         ),
                       ],
                       const SizedBox(height: 26),
@@ -188,7 +247,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      StressHistoryChart(history: provider.history),
+                      _enter(
+                        StressHistoryChart(history: provider.history),
+                        0.58,
+                        1,
+                      ),
                       const SizedBox(height: 12),
                       Center(
                         child: Text(

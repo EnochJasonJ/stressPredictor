@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stresspredictor/core/constants/app_constants.dart';
+import 'package:stresspredictor/models/health_data.dart';
 import 'package:stresspredictor/providers/auth_provider.dart';
 import 'package:stresspredictor/screens/auth/login_screen.dart';
 import 'package:stresspredictor/screens/auth/signup_screen.dart';
@@ -84,9 +85,11 @@ class AppRouter {
           builder: (context, state) => const PredictScreen(),
         ),
         GoRoute(
-  path: '/health-data',
-  builder: (context, state) => const HealthDataScreen(),
-),
+          path: AppConstants.healthDataPath,
+          builder: (context, state) => HealthDataScreen(
+            data: state.extra as HealthData,
+          ),
+        ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: AppConstants.workoutDetailPath,
