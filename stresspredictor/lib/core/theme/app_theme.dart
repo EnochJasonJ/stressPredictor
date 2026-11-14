@@ -37,19 +37,32 @@ class AppTheme {
     final textTheme = GoogleFonts.dmSansTextTheme(
       ThemeData(brightness: brightness).textTheme,
     ).apply(bodyColor: foreground, displayColor: foreground);
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: brightness,
+          primary: primary,
+          secondary: AppColors.accent,
+          surface: surface,
+          error: AppColors.error,
+        ).copyWith(
+          onPrimary: brightness == Brightness.light
+              ? AppColors.textOnPrimary
+              : const Color(0xFF18231F),
+          onSurface: foreground,
+          onSurfaceVariant: secondaryText,
+          outline: outline,
+          outlineVariant: outline,
+          surfaceContainerHighest: brightness == Brightness.light
+              ? AppColors.surfaceVariant
+              : const Color(0xFF2D3A33),
+        );
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       scaffoldBackgroundColor: background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: brightness,
-        primary: primary,
-        secondary: AppColors.accent,
-        surface: surface,
-        error: AppColors.error,
-      ),
+      colorScheme: colorScheme,
       textTheme: textTheme.copyWith(
         headlineLarge: textTheme.headlineLarge?.copyWith(
           fontSize: 30,

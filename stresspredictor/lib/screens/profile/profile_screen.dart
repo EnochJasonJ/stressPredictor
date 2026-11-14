@@ -54,22 +54,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildUserInfo(context, profileProv),
                         const SizedBox(height: 32),
-                        
+
                         _sectionHeader('Analytics'),
                         const SizedBox(height: 12),
                         _buildStressStats(stressProv),
-                        
+
                         const SizedBox(height: 32),
                         _sectionHeader('Preferences'),
                         const SizedBox(height: 12),
-                        _buildSettingsSection(context, profile.notificationsEnabled, profileProv, stressProv),
-                        
+                        _buildSettingsSection(
+                          context,
+                          profile.notificationsEnabled,
+                          profileProv,
+                          stressProv,
+                        ),
+
                         const SizedBox(height: 48),
                         _buildLogoutButton(context),
                         const SizedBox(height: 48),
@@ -90,11 +98,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _sectionHeader(String title) {
     return Text(
       title.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -114,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -122,17 +130,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             width: 64,
             height: 64,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
@@ -154,9 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 4),
                 Text(
                   email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -164,9 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Joined ${_formatDate(joined)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -175,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.edit_outlined, size: 20),
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             onPressed: () => _showEditDialog(context, prov),
           ),
         ],
@@ -210,10 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               const Text(
                 'Edit Profile',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -223,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   labelText: 'Name',
                   prefixIcon: const Icon(Icons.person_outline, size: 20),
                   filled: true,
-                  fillColor: AppColors.surfaceVariant,
+                  fillColor: Theme.of(ctx).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -240,15 +245,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   labelText: 'Email Address',
                   prefixIcon: const Icon(Icons.email_outlined, size: 20),
                   filled: true,
-                  fillColor: AppColors.surfaceVariant,
+                  fillColor: Theme.of(ctx).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
-                validator: (v) =>
-                    (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                validator: (v) => (v == null || !v.contains('@'))
+                    ? 'Enter a valid email'
+                    : null,
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -277,7 +283,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.w600)),
+                  child: const Text(
+                    'Save Changes',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -298,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final avg = count == 0
         ? '—'
         : (history.map((p) => p.stressLevel).reduce((a, b) => a + b) / count)
-            .toStringAsFixed(1);
+              .toStringAsFixed(1);
 
     // Weekly count (last 7 days)
     final weekAgo = DateTime.now().subtract(const Duration(days: 7));
@@ -306,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Row(
       children: [
-        _statCard('Lifetime Avg.', avg, AppColors.primary),
+        _statCard('Lifetime Avg.', avg, Theme.of(context).colorScheme.primary),
         const SizedBox(width: 12),
         _statCard('Past Week', '$weekCount', AppColors.stressMedium),
         const SizedBox(width: 12),
@@ -322,7 +331,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.divider.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,10 +350,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -363,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.3)),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Column(
         children: [
@@ -372,7 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Daily Reminders',
             trailing: Switch(
               value: notificationsEnabled,
-              activeColor: AppColors.primary,
+              activeColor: Theme.of(context).colorScheme.primary,
               onChanged: (_) => prov.toggleNotifications(),
             ),
           ),
@@ -410,7 +421,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Divider(
       height: 1,
       thickness: 1,
-      color: AppColors.divider.withValues(alpha: 0.3),
+      color: Theme.of(context).colorScheme.outlineVariant,
       indent: 52,
       endIndent: 16,
     );
@@ -423,7 +434,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool isDestructive = false,
     VoidCallback? onTap,
   }) {
-    final color = isDestructive ? AppColors.error : AppColors.textPrimary;
+    final color = isDestructive
+        ? AppColors.error
+        : Theme.of(context).colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -431,7 +444,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: isDestructive ? AppColors.error : AppColors.textSecondary),
+            Icon(
+              icon,
+              size: 20,
+              color: isDestructive
+                  ? AppColors.error
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
@@ -443,7 +462,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            trailing ?? Icon(Icons.chevron_right_rounded, size: 20, color: AppColors.divider),
+            trailing ??
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
           ],
         ),
       ),
@@ -480,15 +504,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w700)),
-        content: const Text(
+        title: const Text(
+          'Log Out',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        content: Text(
           'Are you sure you want to log out? Your biometric preferences will remain synced on this device.',
-          style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+          style: TextStyle(
+            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textPrimary)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -513,15 +546,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Clear History', style: TextStyle(fontWeight: FontWeight.w700)),
-        content: const Text(
+        title: const Text(
+          'Clear History',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        content: Text(
           'This will permanently delete all your physiological stress predictions. You cannot undo this action.',
-          style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+          style: TextStyle(
+            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textPrimary)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.onSurface),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -533,7 +575,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     content: const Text('All historical models cleared'),
                     backgroundColor: AppColors.error,
                     behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 );
               }
@@ -554,8 +598,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _formatDate(DateTime dt) {
     const months = [
-      '', 'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${months[dt.month]} ${dt.year}';
   }

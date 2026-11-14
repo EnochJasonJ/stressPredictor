@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:stresspredictor/core/theme/app_colors.dart';
 import 'package:stresspredictor/models/stress_prediction.dart';
 import 'package:stresspredictor/widgets/stress_gauge.dart';
 
@@ -23,11 +22,7 @@ class StressHistoryChart extends StatelessWidget {
           children: [
             const Text(
               'Weekly Stress Trend',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -48,9 +43,11 @@ class StressHistoryChart extends StatelessWidget {
                         borderData: FlBorderData(show: false),
                         titlesData: FlTitlesData(
                           topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
                           rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
@@ -63,10 +60,12 @@ class StressHistoryChart extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 8),
                                   child: Text(
                                     data[idx].label,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.textSecondary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 );
@@ -81,9 +80,11 @@ class StressHistoryChart extends StatelessWidget {
                               getTitlesWidget: (value, meta) {
                                 return Text(
                                   value.toInt().toString(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 );
                               },
@@ -93,7 +94,9 @@ class StressHistoryChart extends StatelessWidget {
                         barGroups: data.asMap().entries.map((e) {
                           final color = e.value.avgLevel != null
                               ? stressLevelColor(context, e.value.avgLevel!)
-                              : AppColors.surfaceVariant;
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest;
                           return BarChartGroupData(
                             x: e.key,
                             barRods: [
@@ -105,23 +108,31 @@ class StressHistoryChart extends StatelessWidget {
                                 backDrawRodData: BackgroundBarChartRodData(
                                   show: true,
                                   toY: 4,
-                                  color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor
+                                      .withValues(alpha: 0.5),
                                 ),
                               ),
                             ],
-                            showingTooltipIndicators: e.value.avgLevel != null ? [0] : [],
+                            showingTooltipIndicators: e.value.avgLevel != null
+                                ? [0]
+                                : [],
                           );
                         }).toList(),
                         barTouchData: BarTouchData(
                           enabled: true,
                           touchTooltipData: BarTouchTooltipData(
-                            getTooltipColor: (group) => AppColors.surfaceVariant,
+                            getTooltipColor: (group) => Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
                               if (rod.toY == 0) return null;
                               return BarTooltipItem(
                                 '${rod.toY.toInt()}',
-                                const TextStyle(
-                                  color: AppColors.textPrimary,
+                                TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 10,
                                 ),
@@ -155,13 +166,10 @@ class StressHistoryChart extends StatelessWidget {
       final avg = dayPredictions.isEmpty
           ? null
           : (dayPredictions.map((p) => p.stressLevel).reduce((a, b) => a + b) /
-                  dayPredictions.length)
-              .round();
+                    dayPredictions.length)
+                .round();
 
-      return _DailyData(
-        label: labels[day.weekday % 7 + 1],
-        avgLevel: avg,
-      );
+      return _DailyData(label: labels[day.weekday % 7 + 1], avgLevel: avg);
     }).toList();
   }
 }

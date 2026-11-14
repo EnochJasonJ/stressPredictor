@@ -3,12 +3,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:stresspredictor/core/theme/app_colors.dart';
 import 'package:stresspredictor/models/health_data.dart';
 import 'package:stresspredictor/providers/stress_provider.dart';
 import 'package:stresspredictor/services/health_service.dart';
-import 'dart:typed_data';
-import 'package:image/image.dart' as img;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 /// Manual input screen – lets users enter (or adjust) all 8 health features
@@ -280,12 +277,14 @@ class _PredictScreenState extends State<PredictScreen> {
                         child: ElevatedButton.icon(
                           onPressed: prov.isLoading ? null : _runPrediction,
                           icon: prov.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
                                   ),
                                 )
                               : const Icon(Icons.analytics_outlined),
@@ -329,7 +328,11 @@ class _PredictScreenState extends State<PredictScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 18, color: AppColors.primary),
+                Icon(
+                  icon,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   label,
@@ -342,13 +345,15 @@ class _PredictScreenState extends State<PredictScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     '${value.toStringAsFixed(1)} $unit',
-                    style: const TextStyle(
-                      color: AppColors.primary,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
@@ -361,7 +366,7 @@ class _PredictScreenState extends State<PredictScreen> {
               min: min,
               max: max,
               divisions: ((max - min) * 2).toInt(),
-              activeColor: AppColors.primary,
+              activeColor: Theme.of(context).colorScheme.primary,
               onChanged: (v) => _updateField(field, v),
             ),
             Row(

@@ -24,15 +24,12 @@ class HealthDataScreen extends StatelessWidget {
             Text(
               'Synced from Health Connect',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
+                color: theme.colorScheme.onSurfaceVariant,
                 letterSpacing: 0.2,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              'Today\'s Overview',
-              style: theme.textTheme.headlineLarge,
-            ),
+            Text('Today\'s Overview', style: theme.textTheme.headlineLarge),
             const SizedBox(height: 24),
 
             // --- Activity Section ---
@@ -47,7 +44,7 @@ class HealthDataScreen extends StatelessWidget {
                     label: 'Steps',
                     value: data.steps.toString(),
                     unit: 'steps',
-                    color: AppColors.primary,
+                    color: theme.colorScheme.primary,
                     isLive: data.steps > 0,
                   ),
                 ),
@@ -89,7 +86,7 @@ class HealthDataScreen extends StatelessWidget {
               icon: Icons.opacity_rounded,
               label: 'Blood Oxygen (SpO₂)',
               value: '${data.bloodOxygen.toStringAsFixed(1)} %',
-              color: AppColors.primary,
+              color: theme.colorScheme.primary,
               isEstimated: !data.bloodOxygenFromSensor,
             ),
             _listTile(
@@ -98,7 +95,8 @@ class HealthDataScreen extends StatelessWidget {
               label: 'Body Temperature',
               value: '${data.bodyTemperature.toStringAsFixed(1)} °F',
               color: AppColors.stressMedium,
-              isEstimated: true, // Typically derived or manually entered right now
+              isEstimated:
+                  true, // Typically derived or manually entered right now
             ),
             _listTile(
               context,
@@ -128,7 +126,8 @@ class HealthDataScreen extends StatelessWidget {
               label: 'Eye Movement',
               value: '${data.eyeMovement.toStringAsFixed(0)} / 100',
               color: AppColors.secondary,
-              isEstimated: true, // Our model infers this if not present natively
+              isEstimated:
+                  true, // Our model infers this if not present natively
             ),
             _listTile(
               context,
@@ -153,20 +152,24 @@ class HealthDataScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
+                color: theme.colorScheme.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline_rounded, size: 18, color: AppColors.primary),
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Values marked as "est." are dynamically estimated from your daily activity trends because your device lacks dedicated sensors for these metrics.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: theme.colorScheme.onSurfaceVariant,
                         height: 1.5,
                       ),
                     ),
@@ -184,11 +187,11 @@ class HealthDataScreen extends StatelessWidget {
   Widget _sectionHeader(BuildContext context, String title) {
     return Text(
       title.toUpperCase(),
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -221,28 +224,49 @@ class HealthDataScreen extends StatelessWidget {
                 ),
                 if (isLive)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: const Text('Live', style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'Live',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.green,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
               value,
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
             ),
             Text(
               unit,
-              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 11,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -279,16 +303,34 @@ class HealthDataScreen extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 if (isEstimated) ...[
                   const SizedBox(width: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: AppColors.textSecondary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('est.', style: TextStyle(fontSize: 9, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'est.',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               ],

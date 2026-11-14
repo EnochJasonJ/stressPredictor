@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Consumer<StressProvider>(
           builder: (context, provider, _) => RefreshIndicator(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             onRefresh: provider.predictFromHealthData,
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -61,12 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 38,
                             height: 38,
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(11),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.graphic_eq_rounded,
-                              color: AppColors.textOnPrimary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                           const SizedBox(width: 11),
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             'FIELDNOTE',
                             style: Theme.of(context).textTheme.labelSmall
                                 ?.copyWith(
-                                  color: AppColors.primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   letterSpacing: 1.7,
                                 ),
                           ),
@@ -82,7 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             '${months[now.month - 1]} ${now.day}',
                             style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(color: AppColors.textSecondary),
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
                           ),
                           const SizedBox(width: 8),
                           _HeaderAction(
@@ -113,12 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? null
                               : provider.predictFromHealthData,
                           icon: provider.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 17,
                                   height: 17,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppColors.textOnPrimary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
                                   ),
                                 )
                               : const Icon(Icons.bolt_rounded, size: 19),
@@ -174,7 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         trailing: Text(
                           '${provider.history.length} LOGS',
                           style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(color: AppColors.textSecondary),
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -184,7 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           'Small steps count. Keep checking in.',
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.textSecondary),
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
                       ),
                     ]),
@@ -400,9 +414,9 @@ class _HeaderAction extends StatelessWidget {
     onPressed: onTap,
     tooltip: tooltip,
     style: IconButton.styleFrom(
-      backgroundColor: AppColors.surface,
-      foregroundColor: AppColors.primary,
-      side: const BorderSide(color: AppColors.divider),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      foregroundColor: Theme.of(context).colorScheme.onSurface,
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
     ),
     icon: Icon(icon, size: 19),
   );

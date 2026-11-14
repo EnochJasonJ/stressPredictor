@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stresspredictor/core/constants/app_constants.dart';
-import 'package:stresspredictor/core/theme/app_colors.dart';
 
 /// Intro screen with animated logo.
 /// Displays a fade-in/scale animation and auto-navigates to home after completion.
@@ -67,7 +66,7 @@ class _IntroScreenState extends State<IntroScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -88,7 +87,7 @@ class _IntroScreenState extends State<IntroScreen>
                             width: 120,
                             height: 120,
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
@@ -98,29 +97,31 @@ class _IntroScreenState extends State<IntroScreen>
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.psychology_outlined,
                               size: 60,
-                              color: AppColors.textOnPrimary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                           const SizedBox(height: 24),
                           // App name
-                          const Text(
+                          Text(
                             AppConstants.appName,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                              letterSpacing: -0.6,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.6,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Your wellness companion',
                             style: TextStyle(
                               fontSize: 16,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -143,7 +144,7 @@ class _IntroScreenState extends State<IntroScreen>
                     child: TextButton(
                       onPressed: _skipIntro,
                       style: TextButton.styleFrom(
-                        foregroundColor: AppColors.primary,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                       child: const Text(

@@ -77,7 +77,7 @@ class _SignupScreenState extends State<SignupScreen>
     final auth = context.watch<AuthProvider>();
     return Scaffold(
       body: Container(
-        color: AppColors.background,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SafeArea(
           child: Column(
             children: [
@@ -87,9 +87,9 @@ class _SignupScreenState extends State<SignupScreen>
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_ios_new,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       size: 20,
                     ),
                     onPressed: () => context.pop(),
@@ -101,28 +101,30 @@ class _SignupScreenState extends State<SignupScreen>
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.graphic_eq_rounded,
                   size: 28,
-                  color: AppColors.textOnPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Create Account',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Join StressPredictor today',
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -134,8 +136,8 @@ class _SignupScreenState extends State<SignupScreen>
                     position: _slideAnim,
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: AppColors.surface,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(22),
                         ),
@@ -269,20 +271,26 @@ class _SignupScreenState extends State<SignupScreen>
                                 child: ElevatedButton(
                                   onPressed: auth.isLoading ? null : _submit,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: AppColors.textOnPrimary,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    foregroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     elevation: 2,
                                   ),
                                   child: auth.isLoading
-                                      ? const SizedBox(
+                                      ? SizedBox(
                                           width: 22,
                                           height: 22,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2,
-                                            color: AppColors.textOnPrimary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimary,
                                           ),
                                         )
                                       : const Text(
@@ -307,10 +315,12 @@ class _SignupScreenState extends State<SignupScreen>
                                     ),
                                     GestureDetector(
                                       onTap: () => context.pop(),
-                                      child: const Text(
+                                      child: Text(
                                         'Log in',
                                         style: TextStyle(
-                                          color: AppColors.primary,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
@@ -336,7 +346,11 @@ class _SignupScreenState extends State<SignupScreen>
   InputDecoration _inputDecoration(String label, IconData icon) =>
       InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
+        prefixIcon: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.primary,
+          size: 20,
+        ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
         border: OutlineInputBorder(
@@ -346,12 +360,15 @@ class _SignupScreenState extends State<SignupScreen>
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.15),
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),

@@ -10,7 +10,8 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (healthData == null || (healthData!.steps == 0 && healthData!.calories == 0)) {
+    if (healthData == null ||
+        (healthData!.steps == 0 && healthData!.calories == 0)) {
       return const SizedBox.shrink();
     }
 
@@ -30,6 +31,7 @@ class ActivityCard extends StatelessWidget {
           children: [
             Expanded(
               child: _buildMetric(
+                context,
                 icon: Icons.directions_walk_rounded,
                 label: 'Steps Today',
                 value: healthData!.steps.toString(),
@@ -39,6 +41,7 @@ class ActivityCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _buildMetric(
+                context,
                 icon: Icons.local_fire_department_rounded,
                 label: 'Energy Burned',
                 value: '${healthData!.calories} kcal',
@@ -51,7 +54,8 @@ class ActivityCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric({
+  Widget _buildMetric(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
@@ -83,10 +87,10 @@ class ActivityCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],

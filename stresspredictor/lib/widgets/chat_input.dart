@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stresspredictor/core/theme/app_colors.dart';
 
 /// Chat input widget - text field and send button for messaging.
 /// Used in the home screen for stress-related chat.
@@ -47,11 +46,16 @@ class _ChatInputState extends State<ChatInput> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.divider),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
                 ),
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surface,
@@ -67,8 +71,8 @@ class _ChatInputState extends State<ChatInput> {
             onPressed: sendMessage,
             icon: const Icon(Icons.send),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ],

@@ -13,6 +13,7 @@ import 'package:stresspredictor/screens/profile/privacy_screen.dart';
 import 'package:stresspredictor/screens/profile/profile_screen.dart';
 import 'package:stresspredictor/screens/workout/workout_detail_screen.dart';
 import 'package:stresspredictor/screens/workout/workout_screen.dart';
+import 'package:stresspredictor/screens/health/health_data_screen.dart';
 
 /// App router configuration using go_router.
 /// Defines all navigation routes for the Stress Predictor app.
@@ -82,6 +83,10 @@ class AppRouter {
           name: 'predict',
           builder: (context, state) => const PredictScreen(),
         ),
+        GoRoute(
+  path: '/health-data',
+  builder: (context, state) => const HealthDataScreen(),
+),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: AppConstants.workoutDetailPath,

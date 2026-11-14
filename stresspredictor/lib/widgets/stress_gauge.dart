@@ -44,9 +44,13 @@ class _StressGaugeState extends State<StressGauge>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900));
-    _animation = Tween<double>(begin: 0, end: widget.stressLevel / 4.0)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.stressLevel / 4.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
   }
 
@@ -54,10 +58,13 @@ class _StressGaugeState extends State<StressGauge>
   void didUpdateWidget(StressGauge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.stressLevel != widget.stressLevel) {
-      _animation = Tween<double>(
-        begin: oldWidget.stressLevel / 4.0,
-        end: widget.stressLevel / 4.0,
-      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      _animation =
+          Tween<double>(
+            begin: oldWidget.stressLevel / 4.0,
+            end: widget.stressLevel / 4.0,
+          ).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+          );
       _controller.forward(from: 0);
     }
   }
@@ -84,6 +91,9 @@ class _StressGaugeState extends State<StressGauge>
                 painter: _GaugePainter(
                   progress: _animation.value,
                   color: color,
+                  trackColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
                 ),
                 child: Center(
                   child: Column(
@@ -101,7 +111,7 @@ class _StressGaugeState extends State<StressGauge>
                         widget.stressLabel,
                         style: const TextStyle(
                           fontSize: 13,
-                          
+
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -120,8 +130,13 @@ class _StressGaugeState extends State<StressGauge>
 class _GaugePainter extends CustomPainter {
   final double progress;
   final Color color;
+  final Color trackColor;
 
-  _GaugePainter({required this.progress, required this.color});
+  _GaugePainter({
+    required this.progress,
+    required this.color,
+    required this.trackColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -129,7 +144,7 @@ class _GaugePainter extends CustomPainter {
     final radius = size.width / 2 - 10;
 
     final bgPaint = Paint()
-      ..color = AppColors.divider
+      ..color = trackColor
       ..strokeWidth = 14
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -154,5 +169,7 @@ class _GaugePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GaugePainter old) =>
-      old.progress != progress || old.color != color;
+      old.progress != progress ||
+      old.color != color ||
+      old.trackColor != trackColor;
 }
