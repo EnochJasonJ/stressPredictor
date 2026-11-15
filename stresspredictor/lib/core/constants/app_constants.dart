@@ -18,6 +18,7 @@ class AppConstants {
   static const String workoutDetailPath = '/workout/detail';
   static const String profilePath = '/profile';
   static const String predictPath = '/predict';
+  static const String liveAnalysisPath = '/live-analysis';
   static const String appearancePath = '/profile/appearance';
   static const String privacyPath = '/profile/privacy';
   static const String helpPath = '/profile/help';

@@ -45,7 +45,10 @@ class HealthService {
         return false;
       }
 
-      bool? hasPermissions = await _health.hasPermissions(_dataTypes, permissions: _permissions);
+      bool? hasPermissions = await _health.hasPermissions(
+        _dataTypes,
+        permissions: _permissions,
+      );
 
       if (hasPermissions != true) {
         bool granted = await _health.requestAuthorization(
@@ -54,7 +57,9 @@ class HealthService {
         );
 
         if (!granted) {
-          debugPrint("[HealthService] User denied Health permissions. Please enable manually in Health Connect app.");
+          debugPrint(
+            "[HealthService] User denied Health permissions. Please enable manually in Health Connect app.",
+          );
           return false;
         }
       }
@@ -119,7 +124,8 @@ class HealthService {
           temp = getValue()?.toDouble();
         } else if (type == HealthDataType.BLOOD_OXYGEN && oxygen == null) {
           oxygen = getValue()?.toDouble();
-        } else if (type == HealthDataType.SLEEP_SESSION && sleepDuration == null) {
+        } else if (type == HealthDataType.SLEEP_SESSION &&
+            sleepDuration == null) {
           // SLEEP_SESSION provides duration via dateTo - dateFrom
           final minutes = data.dateTo.difference(data.dateFrom).inMinutes;
           sleepDuration = minutes / 60.0;
@@ -143,6 +149,7 @@ class HealthService {
         // Provenance flags
         heartRateFromSensor: hr != null,
         respirationFromSensor: rr != null,
+        bodyTemperatureFromSensor: temp != null,
         bloodOxygenFromSensor: oxygen != null,
         sleepFromSensor: sleepDuration != null,
       );
@@ -173,7 +180,9 @@ class HealthService {
 
         // Fetch aggregated steps using interval
         int? steps = await _health.getTotalStepsInInterval(
-            midnight, i == 0 ? now : endOfDay);
+          midnight,
+          i == 0 ? now : endOfDay,
+        );
         dailySteps.add(steps ?? 0);
       }
 

@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:stresspredictor/core/constants/app_constants.dart';
 import 'package:stresspredictor/models/health_data.dart';
 import 'package:stresspredictor/providers/stress_provider.dart';
 import 'package:stresspredictor/services/health_service.dart';
@@ -12,7 +13,9 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 /// before running a stress prediction. Pre-populated from Health Connect
 /// where data is available.
 class PredictScreen extends StatefulWidget {
-  const PredictScreen({super.key});
+  const PredictScreen({super.key, this.initialData});
+
+  final HealthData? initialData;
 
   @override
   State<PredictScreen> createState() => _PredictScreenState();
@@ -31,7 +34,8 @@ class _PredictScreenState extends State<PredictScreen> {
   }
 
   Future<void> _loadHealthData() async {
-    final data = await HealthService.instance.fetchHealthData();
+    final data =
+        widget.initialData ?? await HealthService.instance.fetchHealthData();
     if (mounted) {
       setState(() {
         _data = data;
@@ -152,6 +156,23 @@ class _PredictScreenState extends State<PredictScreen> {
                           'Pre-filled from available sensors. Adjust any values manually.',
                           style: TextStyle(fontSize: 13),
                         ),
+                        if (_data.missingLiveAnalysisInputs.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Live analysis needs sensor readings or real manual values for: ${_data.missingLiveAnalysisInputs.join(', ')}.',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 20),
                         _slider(
                           label: 'Snoring Rate',
@@ -269,39 +290,58 @@ class _PredictScreenState extends State<PredictScreen> {
                 // ── Predict Button ────────────────────────────────────────
                 SafeArea(
                   minimum: const EdgeInsets.only(bottom: 24),
-                  child: Consumer<StressProvider>(
-                    builder: (context, prov, _) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: prov.isLoading ? null : _runPrediction,
-                          icon: prov.isLoading
-                              ? SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimary,
-                                  ),
-                                )
-                              : const Icon(Icons.analytics_outlined),
-                          label: Text(
-                            prov.isLoading
-                                ? 'Predicting...'
-                                : 'Predict Stress Level',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => context.push(
+                              AppConstants.liveAnalysisPath,
+                              extra: _data,
+                            ),
+                            icon: const Icon(Icons.camera_alt_outlined),
+                            label: const Text('Live Camera Analysis'),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            textStyle: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                        ),
+                        const SizedBox(height: 8),
+                        Consumer<StressProvider>(
+                          builder: (context, prov, _) => SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: prov.isLoading ? null : _runPrediction,
+                              icon: prov.isLoading
+                                  ? SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary,
+                                      ),
+                                    )
+                                  : const Icon(Icons.analytics_outlined),
+                              label: Text(
+                                prov.isLoading
+                                    ? 'Predicting...'
+                                    : 'Predict Stress Level',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),

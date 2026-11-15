@@ -13,6 +13,8 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from vision_service import analyze_face, FaceDetectionError
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from live_vision_service import analyze_frame
+from temporal_vision_service import TemporalVisionAnalyzer
 import model_loader
 
 app = FastAPI(
@@ -36,6 +38,8 @@ STRESS_LABELS = {
     3: "High",
     4: "Very High",
 }
+
+temporal_analyzer = TemporalVisionAnalyzer(window_seconds=10.0)
 
 # ---------------------------------------------------------------------------
 # Schemas
@@ -303,3 +307,131 @@ async def predict_multimodal(
 
     finally:
         await image.close()
+        
+@app.post("/analyze-frame")
+async def analyze_frame_endpoint(
+    image: UploadFile = File(...),
+):
+    content_type = (image.content_type or "").lower()
+
+    if content_type not in (
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    ):
+        raise HTTPException(
+            status_code=415,
+            detail="Upload a JPEG, PNG, or WebP image.",
+        )
+
+    try:
+        image_bytes = await image.read()
+
+        return analyze_frame(image_bytes)
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Frame analysis failed: {exc}",
+        ) from exc
+
+    finally:
+        await image.close()
+        
+@app.post("/analyze-frame-temporal")
+async def analyze_frame_temporal(
+    image: UploadFile = File(...),
+):
+    content_type = (image.content_type or "").lower()
+
+    if content_type not in (
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+    ):
+        raise HTTPException(
+            status_code=415,
+            detail="Upload a JPEG, PNG, or WebP image.",
+        )
+
+    try:
+        image_bytes = await image.read()
+
+        return temporal_analyzer.add_frame(
+            image_bytes
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Temporal frame analysis failed: {exc}",
+        ) from exc
+
+    finally:
+        await image.close()
+        
+@app.post("/analyze-live-multimodal")
+async def analyze_live_multimodal(
+    image: UploadFile = File(...),
+    snoring_rate: float = Form(...),
+    respiration_rate: float = Form(...),
+    body_temperature: float = Form(...),
+    limb_movement_rate: float = Form(...),
+    blood_oxygen: float = Form(...),
+    eye_movement: float = Form(...),
+    sleep_hours: float = Form(...),
+    heart_rate: float = Form(...),
+):
+    try:
+        image_bytes = await image.read()
+
+        # 1. Temporal vision analysis
+        vision_result = temporal_analyzer.add_frame(image_bytes)
+
+        # 2. Physiological stress prediction
+        raw_features = [
+            snoring_rate,
+            respiration_rate,
+            body_temperature,
+            limb_movement_rate,
+            blood_oxygen,
+            eye_movement,
+            sleep_hours,
+            heart_rate,
+        ]
+
+        physiological_level = model_loader.predict(raw_features)
+        physiological_label = STRESS_LABELS.get(
+            physiological_level,
+            "Unknown"
+        )
+
+        # 3. Use dominant facial expression as contextual signal
+        facial_expression = vision_result.get("dominant_expression")
+
+        # 4. Existing fusion logic
+        final_level = combine_stress_signals(
+            physiological_level,
+            facial_expression
+        )
+
+        final_label = STRESS_LABELS.get(final_level, "Unknown")
+
+        return {
+            "physiological_stress": {
+                "level": physiological_level,
+                "label": physiological_label,
+            },
+            "vision": vision_result,
+            "final_stress": {
+                "level": final_level,
+                "label": final_label,
+            },
+            "analysis_status": "live_multimodal_analysis",
+        }
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Live multimodal analysis failed: {exc}"
+        )

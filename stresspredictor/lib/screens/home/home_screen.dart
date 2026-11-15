@@ -132,6 +132,14 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                                 const SizedBox(width: 8),
                                 _HeaderAction(
+                                  icon: Icons.camera_alt_outlined,
+                                  tooltip: 'Live stress analysis',
+                                  onTap: () => context.push(
+                                    AppConstants.liveAnalysisPath,
+                                    extra: provider.currentHealthData,
+                                  ),
+                                ),
+                                _HeaderAction(
                                   icon: Icons.tune_rounded,
                                   tooltip: 'Manual prediction',
                                   onTap: () =>

@@ -15,6 +15,15 @@ class HealthData {
   final bool bloodOxygenFromSensor;
   final bool sleepFromSensor;
   final bool respirationFromSensor;
+  final bool bodyTemperatureFromSensor;
+  final bool snoringRateManuallyProvided;
+  final bool respirationRateManuallyProvided;
+  final bool bodyTemperatureManuallyProvided;
+  final bool limbMovementRateManuallyProvided;
+  final bool bloodOxygenManuallyProvided;
+  final bool eyeMovementManuallyProvided;
+  final bool sleepHoursManuallyProvided;
+  final bool heartRateManuallyProvided;
 
   const HealthData({
     required this.snoringRate,
@@ -31,6 +40,15 @@ class HealthData {
     this.bloodOxygenFromSensor = false,
     this.sleepFromSensor = false,
     this.respirationFromSensor = false,
+    this.bodyTemperatureFromSensor = false,
+    this.snoringRateManuallyProvided = false,
+    this.respirationRateManuallyProvided = false,
+    this.bodyTemperatureManuallyProvided = false,
+    this.limbMovementRateManuallyProvided = false,
+    this.bloodOxygenManuallyProvided = false,
+    this.eyeMovementManuallyProvided = false,
+    this.sleepHoursManuallyProvided = false,
+    this.heartRateManuallyProvided = false,
   });
 
   factory HealthData.defaults() {
@@ -61,6 +79,32 @@ class HealthData {
     'heart_rate': heartRate,
   };
 
+  /// Required values that have neither sensor provenance nor a manual entry.
+  List<String> get missingLiveAnalysisInputs {
+    final missing = <String>[];
+    if (!snoringRateManuallyProvided) missing.add('Snoring rate');
+    if (!respirationFromSensor && !respirationRateManuallyProvided) {
+      missing.add('Respiration rate');
+    }
+    if (!bodyTemperatureFromSensor && !bodyTemperatureManuallyProvided) {
+      missing.add('Body temperature');
+    }
+    if (!limbMovementRateManuallyProvided) missing.add('Limb movement rate');
+    if (!bloodOxygenFromSensor && !bloodOxygenManuallyProvided) {
+      missing.add('Blood oxygen');
+    }
+    if (!eyeMovementManuallyProvided) missing.add('Eye movement');
+    if (!sleepFromSensor && !sleepHoursManuallyProvided) {
+      missing.add('Sleep hours');
+    }
+    if (!heartRateFromSensor && !heartRateManuallyProvided) {
+      missing.add('Heart rate');
+    }
+    return missing;
+  }
+
+  bool get hasLiveAnalysisInputs => missingLiveAnalysisInputs.isEmpty;
+
   HealthData copyWith({
     double? snoringRate,
     double? respirationRate,
@@ -84,6 +128,26 @@ class HealthData {
       eyeMovement: eyeMovement ?? this.eyeMovement,
       sleepHours: sleepHours ?? this.sleepHours,
       heartRate: heartRate ?? this.heartRate,
+      heartRateFromSensor: heartRateFromSensor,
+      bloodOxygenFromSensor: bloodOxygenFromSensor,
+      sleepFromSensor: sleepFromSensor,
+      respirationFromSensor: respirationFromSensor,
+      bodyTemperatureFromSensor: bodyTemperatureFromSensor,
+      snoringRateManuallyProvided:
+          snoringRate != null || snoringRateManuallyProvided,
+      respirationRateManuallyProvided:
+          respirationRate != null || respirationRateManuallyProvided,
+      bodyTemperatureManuallyProvided:
+          bodyTemperature != null || bodyTemperatureManuallyProvided,
+      limbMovementRateManuallyProvided:
+          limbMovementRate != null || limbMovementRateManuallyProvided,
+      bloodOxygenManuallyProvided:
+          bloodOxygen != null || bloodOxygenManuallyProvided,
+      eyeMovementManuallyProvided:
+          eyeMovement != null || eyeMovementManuallyProvided,
+      sleepHoursManuallyProvided:
+          sleepHours != null || sleepHoursManuallyProvided,
+      heartRateManuallyProvided: heartRate != null || heartRateManuallyProvided,
     );
   }
 }
