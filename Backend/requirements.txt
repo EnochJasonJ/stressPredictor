@@ -7,37 +7,8 @@ pydantic==2.9.2
 pandas==2.2.0
 Pillow
 python-multipart
-numpy==1.26.4
-pandas==2.2.0
 scipy==1.13.1
 opencv-python-headless==4.10.0.84
 
-
-curl -X 'POST' \
-  'http://localhost:8000/predict-multimodal' \
-  -H 'accept: */*' \
-  -H 'Content-Type: multipart/form-data' \
-  -F 'limb_movement_rate=100' \
-  -F 'respiration_rate=60' \
-  -F 'blood_oxygen=80' \
-  -F 'sleep_hours=15' \
-  -F 'body_temperature=84' \
-  -F 'heart_rate=30' \
-  -F 'image=@test_face.jpg;type=image/jpeg' \
-  -F 'snoring_rate=100' \
-  -F 'eye_movement=100'
-
-  curl -X 'POST' \
-  'http://localhost:8000/predict-multimodal' \
-  -H 'accept: */*' \
-  -H 'Content-Type: multipart/form-data' \
-  -F 'image=@1782881676246~2.jpg;type=image/jpeg' \
-  -F 'snoring_rate=100' \
-  -F 'respiration_rate=60' \
-  -F 'body_temperature=84' \
-  -F 'limb_movement_rate=100' \
-  -F 'blood_oxygen=80' \
-  -F 'eye_movement=100' \
-  -F 'sleep_hours=24' \
-  -F 'heart_rate=30'
-
+mediapipe
+xgboost
